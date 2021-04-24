@@ -1,15 +1,17 @@
 import 'package:devquiz/challenge/challenge_controller.dart';
-import 'package:devquiz/challenge/widgets/next_button/next_button_widget.dart';
 import 'package:devquiz/challenge/widgets/question_indicator/question_indicator_widget.dart';
 import 'package:devquiz/challenge/widgets/quiz/quiz_widget.dart';
+import 'package:devquiz/result/result_page.dart';
 import 'package:devquiz/shared/models/question_model.dart';
+import 'package:devquiz/shared/widgets/next_button/next_button_widget.dart';
 import 'package:flutter/material.dart';
 
 class ChallengePage extends StatefulWidget {
 
+  final String title;
   final List<QuestionModel> questions;
 
-  const ChallengePage({Key? key, required this.questions }) : super(key: key);
+  const ChallengePage({Key? key, required this.title, required this.questions }) : super(key: key);
 
   @override
   _ChallengePageState createState() => _ChallengePageState();
@@ -66,7 +68,12 @@ class _ChallengePageState extends State<ChallengePage> {
         children: widget.questions
           .map((e) => QuizWidget(
               model: e,
-              onChange: nextPage,
+              onSelected: (isCorrect) {
+                if (isCorrect)
+                  controller.counterCorrectAnswer++;
+
+                nextPage();
+              },
             )
           )
           .toList()
@@ -93,7 +100,15 @@ class _ChallengePageState extends State<ChallengePage> {
                     child: NextButtonWidget.green(
                       label: 'Confirmar',
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => ResultPage(
+                              title: widget.title,
+                              length: widget.questions.length,
+                              counterCorrectAnswer: controller.counterCorrectAnswer,
+                            )
+                          )
+                        );
                       }
                     )
                   )
