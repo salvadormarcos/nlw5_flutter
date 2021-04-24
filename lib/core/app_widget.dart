@@ -10,7 +10,6 @@ class AppWidget extends StatelessWidget {
       title: "DevQuiz",
       //home: SplashPage(),
       home: HomePage(),
-      //home: ChallengePage(),
     );
   }
 }

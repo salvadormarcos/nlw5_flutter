@@ -1,34 +1,49 @@
 import 'package:devquiz/challenge/widgets/answer/answer_widget.dart';
 import 'package:devquiz/core/app_text_styles.dart';
+import 'package:devquiz/shared/models/answer_model.dart';
+import 'package:devquiz/shared/models/question_model.dart';
 import 'package:flutter/material.dart';
 
-class QuizWidget extends StatelessWidget {
+class QuizWidget extends StatefulWidget {
   
-  final String title;
+  final QuestionModel model;
+  final VoidCallback onChange;
 
-  const QuizWidget({Key? key, required this.title}) : super(key: key);
+  const QuizWidget({Key? key, required this.model, required this.onChange }) : super(key: key);
+
+  @override
+  _QuizWidgetState createState() => _QuizWidgetState();
+}
+
+class _QuizWidgetState extends State<QuizWidget> {
+
+  int indexSelecionado = -1;
+
+  AnswerModel answers(int index) => widget.model.answers[index];
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: AppTextStyles.heading),
+          Text(widget.model.title, style: AppTextStyles.heading),
           SizedBox(height: 24),
-          AnswerWidget(
-            title: 'Possibilita a criação de aplicativos compilados nativamente',
-            isCorrect: true,
-            isSelected: true
-          ),
-          AnswerWidget(
-            title: 'Possibilita a criação de aplicativos compilados nativamente'
-          ),
-          AnswerWidget(
-            title: 'Possibilita a criação de aplicativos compilados nativamente'
-          ),
-          AnswerWidget(
-            title: 'Possibilita a criação de aplicativos compilados nativamente'
-          ),
+
+          for (var i = 0; i < widget.model.answers.length; i++)
+            AnswerWidget(
+              model: answers(i),
+              isSelected: indexSelecionado == i,
+              disabled: indexSelecionado != -1,
+              onTap: () {
+                indexSelecionado = i;
+
+                setState(() { });
+
+                Future.delayed(Duration(milliseconds: 500))
+                  .then((value) => widget.onChange());
+              },
+            ),
         ],
       )
     );
